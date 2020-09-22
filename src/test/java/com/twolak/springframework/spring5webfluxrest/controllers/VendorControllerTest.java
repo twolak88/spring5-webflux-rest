@@ -15,7 +15,6 @@ import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
-import com.twolak.springframework.spring5webfluxrest.domain.Category;
 import com.twolak.springframework.spring5webfluxrest.domain.Vendor;
 import com.twolak.springframework.spring5webfluxrest.repositories.VendorRepository;
 
