@@ -22,6 +22,8 @@ import com.twolak.springframework.spring5webfluxrest.repositories.CategoryReposi
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import static org.hamcrest.CoreMatchers.equalTo;
+import static org.hamcrest.CoreMatchers.is;
 import static org.mockito.BDDMockito.*;
 
 /**
@@ -71,7 +73,7 @@ class CategoryControllerTest {
 		given(this.categoryRepository.findById(anyString())).willReturn(Mono.just(
 				Category.builder().description("cat1").build()));
 		
-		this.webTestClient.get().uri(CategoryController.BASE_URL + "/abc")
+		this.webTestClient.get().uri(CategoryController.BASE_URL + "/someId")
 			.header(HttpHeaders.ACCEPT, "application/json")
 			.exchange()
 			.expectStatus().isOk()
@@ -101,10 +103,44 @@ class CategoryControllerTest {
 		Mono<Category> catToUpdateMono = Mono.just(Category.builder().description("Some cat").build());
 		
 		this.webTestClient.put()
-			.uri(CategoryController.BASE_URL + "/abc")
+			.uri(CategoryController.BASE_URL + "/someId")
 			.accept(MediaType.APPLICATION_JSON)
 			.body(catToUpdateMono, Category.class)
 			.exchange()
 			.expectStatus().isOk();
+	}
+	
+	@Test
+	void testPatchCategory() {
+		given(this.categoryRepository.findById(anyString())).willReturn(Mono.just(Category.builder().description("Some cat2").build()));
+		given(this.categoryRepository.save(any(Category.class))).willReturn(Mono.just(Category.builder().build()));
+		Mono<Category> catToUpdateMono = Mono.just(Category.builder().description("Some cat").build());
+		
+		this.webTestClient.patch()
+			.uri(CategoryController.BASE_URL + "/someId")
+			.accept(MediaType.APPLICATION_JSON)
+			.body(catToUpdateMono, Category.class)
+			.exchange()
+			.expectStatus().isOk();
+		then(this.categoryRepository).should(times(1)).findById(anyString());
+		then(this.categoryRepository).should(times(1)).save(any(Category.class));
+		then(this.categoryRepository).shouldHaveNoMoreInteractions();
+	}
+	
+	@Test
+	void testPatchCategoryNoChanges() {
+		given(this.categoryRepository.findById(anyString())).willReturn(Mono.just(Category.builder().build()));
+		given(this.categoryRepository.save(any(Category.class))).willReturn(Mono.just(Category.builder().build()));
+		Mono<Category> catToUpdateMono = Mono.just(Category.builder().build());
+		
+		this.webTestClient.patch()
+			.uri(CategoryController.BASE_URL + "/someId")
+			.accept(MediaType.APPLICATION_JSON)
+			.body(catToUpdateMono, Category.class)
+			.exchange()
+			.expectStatus().isOk();
+		then(this.categoryRepository).should(times(1)).findById(anyString());
+		then(this.categoryRepository).should(never()).save(any(Category.class));
+		then(this.categoryRepository).shouldHaveNoMoreInteractions();
 	}
 }

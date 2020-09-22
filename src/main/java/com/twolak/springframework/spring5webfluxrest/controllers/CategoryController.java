@@ -3,6 +3,7 @@ package com.twolak.springframework.spring5webfluxrest.controllers;
 import org.reactivestreams.Publisher;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -54,4 +55,15 @@ public class CategoryController {
 		category.setId(id);
 		return this.categoryRepository.save(category);
 	}
+	
+	@PatchMapping("{id}")
+	public Mono<Category> patchCategory(@PathVariable("id") String id, @RequestBody Category category) {
+		//service layer
+		Category foundCategory = this.categoryRepository.findById(id).block();
+		if(foundCategory.getDescription() != category.getDescription()) {
+			foundCategory.setDescription(category.getDescription());
+			return this.categoryRepository.save(foundCategory);
+		}
+		return Mono.just(foundCategory);
+	} 
 }
