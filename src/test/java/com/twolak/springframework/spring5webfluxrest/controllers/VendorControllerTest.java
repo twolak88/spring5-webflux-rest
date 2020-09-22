@@ -33,6 +33,8 @@ import static org.mockito.Mockito.times;
 @WebFluxTest(controllers = VendorController.class)
 class VendorControllerTest {
 	
+	private static final String FIRST_NAME_2 = "Rob";
+
 	private static final String LAST_NAME = "Uncle";
 
 	private static final String FIRST_NAME = "Bob";
@@ -53,7 +55,7 @@ class VendorControllerTest {
 	@Test
 	void testGetAllVendors() {
 		given(this.vendorRepository.findAll()).willReturn(Flux.just(
-				Vendor.builder().firstname("Rob").lastname("Kent").build(),
+				Vendor.builder().firstname(FIRST_NAME_2).lastname("Kent").build(),
 				Vendor.builder().firstname(FIRST_NAME).lastname(LAST_NAME).build()));
 		
 		this.webTestClient.get().uri(VendorController.BASE_URL)
@@ -113,10 +115,10 @@ class VendorControllerTest {
 	
 	@Test
 	void testPatchVendor() {
-		given(this.vendorRepository.findById(anyString())).willReturn(Mono.just(Vendor.builder().build()));
+		given(this.vendorRepository.findById(anyString())).willReturn(Mono.just(Vendor.builder().firstname(FIRST_NAME).build()));
 		given(this.vendorRepository.save(any(Vendor.class))).willReturn(Mono.just(Vendor.builder().build()));
 		
-		Mono<Vendor> vendorToUpdate = Mono.just(Vendor.builder().firstname(FIRST_NAME).build());
+		Mono<Vendor> vendorToUpdate = Mono.just(Vendor.builder().firstname(FIRST_NAME_2).build());
 		
 		this.webTestClient.patch().uri(VendorController.BASE_URL + "/someId")
 			.accept(MediaType.APPLICATION_JSON)
