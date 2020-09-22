@@ -8,10 +8,12 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.test.web.reactive.server.WebTestClient;
 
 import com.twolak.springframework.spring5webfluxrest.domain.Category;
@@ -76,6 +78,20 @@ class CategoryControllerTest {
 			.expectBody(Category.class);
 		then(this.categoryRepository).should(times(1)).findById(anyString());
 		then(this.categoryRepository).shouldHaveNoMoreInteractions();
+	}
+	
+	@Test
+	void testCreateCategories() {
+		given(this.categoryRepository.saveAll(any(Publisher.class))).willReturn(Flux.just(Category.builder().build()));
+		
+		Mono<Category> catToSaveMono = Mono.just(Category.builder().description("Some cat").build());
+		
+		this.webTestClient.post()
+			.uri(CategoryController.BASE_URL)
+			.accept(MediaType.APPLICATION_JSON)
+			.body(catToSaveMono, Category.class)
+			.exchange()
+			.expectStatus().isCreated();
 	}
 
 }
