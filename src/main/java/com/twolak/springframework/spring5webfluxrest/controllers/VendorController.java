@@ -62,11 +62,11 @@ public class VendorController {
 	public Mono<Vendor> patchVendor(@PathVariable("id") String id, @RequestBody Vendor vendor) {
 		Vendor foundVendor = this.vendorRepository.findById(id).block();
 		boolean hasChanges = false;
-		if (foundVendor.getFirstname() != vendor.getFirstname()) {
+		if (vendor.getFirstname() != null && !foundVendor.getFirstname().equals(vendor.getFirstname())) {
 			foundVendor.setFirstname(vendor.getFirstname());
 			hasChanges = true;
 		}
-		if (foundVendor.getLastname() != vendor.getLastname()) {
+		if (vendor.getLastname() != null && !foundVendor.getLastname().equals(vendor.getLastname())) {
 			foundVendor.setLastname(vendor.getLastname());
 			hasChanges = true;
 		}

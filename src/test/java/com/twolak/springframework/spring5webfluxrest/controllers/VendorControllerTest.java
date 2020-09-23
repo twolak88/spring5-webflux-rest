@@ -10,6 +10,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.reactivestreams.Publisher;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -31,6 +32,7 @@ import static org.mockito.Mockito.times;
  */
 @ExtendWith(MockitoExtension.class)
 @WebFluxTest(controllers = VendorController.class)
+@AutoConfigureWebTestClient(timeout = "100000")
 class VendorControllerTest {
 	
 	private static final String FIRST_NAME_2 = "Rob";
